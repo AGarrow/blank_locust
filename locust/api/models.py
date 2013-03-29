@@ -3,7 +3,7 @@ from django.db import models
 
 class OpenCivicID(models.Model):
     id = models.CharField(max_length=128, primary_key=True)
-    internal_id = models.CharField(max_length=128)
+    external_id = models.CharField(max_length=128, unique=True)
     start = models.DateTimeField()
     end = models.DateTimeField(null=True)
 

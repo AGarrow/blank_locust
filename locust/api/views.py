@@ -27,9 +27,9 @@ def index(request):
 def query_space_time(request):
     lat, lon = [request.GET[x] for x in ['lat', 'lon']]
     ids = query_pentagon(lat, lon)
-    objs = OpenCivicID.objects.filter(internal_id__in=ids)
+    objs = OpenCivicID.objects.filter(id__in=ids)
     return render_api_response({
-        "response": [x.id for x in objs],
+        "response": [x.external_id for x in objs],
         "_original_response": ids,
         "meta": {
             "status": "ok",

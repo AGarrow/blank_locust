@@ -32,11 +32,12 @@ def itercsv(fpath):
 
 
 def update_db(path):
-    for internal_id, _id, start, end, description in itercsv(path):
+    for _id, external_id, start, end, description in itercsv(path):
         start, end = (parse_date(x) for x in (start, end))
 
         try:
-            obj = OpenCivicID.objects.get(internal_id=internal_id)
+            print external_id
+            obj = OpenCivicID.objects.get(external_id=external_id)
         except OpenCivicID.DoesNotExist:
             obj = OpenCivicID()
 
@@ -44,9 +45,9 @@ def update_db(path):
         obj.start = start
         obj.end = end
         # obj.description = description
-        obj.internal_id = internal_id
+        obj.external_id = external_id
 
-        print "Saving: {_id}".format(**locals())
+        print "Saving: {obj}".format(**locals())
         obj.save()
 
 
