@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.conf import settings
 
+import datetime as dt
 import urllib2
 import json
 
@@ -26,8 +27,20 @@ def index(request):
 
 def query_space_time(request):
     lat, lon = [request.GET[x] for x in ['lat', 'lon']]
+    date = request.GET["date"] if "date" in request.GET else None
+    if date:
+        date = dt.datetime.strptime(date, "%Y-%m-%d")
+
+
     ids = query_pentagon(lat, lon)
-    objs = OpenCivicID.objects.filter(id__in=ids)
+    query = {"id__in": ids}
+    if date:
+        query["start__lt"] = date
+        query["end__gt"] = date
+    else:
+        query["end"] = None
+
+    objs = OpenCivicID.objects.filter(**query)
     return render_api_response({
         "response": [x.external_id for x in objs],
         "_original_response": ids,
