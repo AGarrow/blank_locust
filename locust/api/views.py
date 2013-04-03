@@ -39,7 +39,7 @@ def query_space_time(request):
     query = [Q(id__in=ids)]
 
     query.append(Q(start__lt=date))
-    query.append(Q(end__gt=date) | Q(end=None))
+    query.append(Q(end__gte=date) | Q(end=None))
 
     objs = OpenCivicID.objects.filter(*query)
     return render_api_response({
