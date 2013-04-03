@@ -4,6 +4,7 @@ from locust.api.models import OpenCivicID
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.conf import settings
+from django.db.models import Q
 
 import datetime as dt
 import urllib2
@@ -30,17 +31,17 @@ def query_space_time(request):
     date = request.GET["date"] if "date" in request.GET else None
     if date:
         date = dt.datetime.strptime(date, "%Y-%m-%d")
+    else:
+        date = dt.datetime.now()
 
 
     ids = query_pentagon(lat, lon)
-    query = {"id__in": ids}
-    if date:
-        query["start__lt"] = date
-        query["end__gt"] = date
-    else:
-        query["end"] = None
+    query = [Q(id__in=ids)]
 
-    objs = OpenCivicID.objects.filter(**query)
+    query.append(Q(start__lt=date))
+    query.append(Q(end__gt=date) | Q(end=None))
+
+    objs = OpenCivicID.objects.filter(*query)
     return render_api_response({
         "response": [x.external_id for x in objs],
         "_original_response": ids,
