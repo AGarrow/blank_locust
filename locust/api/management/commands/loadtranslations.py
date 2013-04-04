@@ -5,6 +5,14 @@ import datetime as dt
 import os
 
 
+def open_civic_namer(block, encoding='latin1'):
+    # {'INTPTLAT': '32.536382', 'NAME': 'Autauga County', 'INTPTLONG': '-86.644490', 'USPS': 'AL', 'AWATER_SQMI': '9.952', 'AWATER': '25775735', 'ANSICODE': '00161526', 'HU10': '22135', 'POP10': '54571', 'ALAND_SQMI': '594.436', 'GEOID': '01001', 'ALAND': '1539582278'}
+    name = block['NAME'].lower().replace(" ", "-").decode(encoding)
+    return "ocd:place/place:%s" % (name)
+
+
+
+
 def parse_date(string):
     fmts = [
         "%Y-%m-%d",  # YYY-MM-DD
@@ -24,26 +32,31 @@ def parse_date(string):
 
 
 def itertsv(fpath):
-    for line in open(fpath, 'r'):
+    fd = open(fpath, 'r')
+    headers = [x.strip() for x in next(fd).split("\t")]
+
+    for line in fd:
         if line.startswith("#"):
             continue
 
-        yield [x.strip() for x in line.split("      ")]
+        yield dict(zip(headers, [x.strip() for x in line.split("\t")]))
 
 
 def update_db(path):
     for bits in itertsv(path):
-        print bits
+        name = open_civic_namer(bits)
+        external_id = bits['GEOID']
 
         try:
-            print external_id
             obj = OpenCivicID.objects.get(external_id=external_id)
         except OpenCivicID.DoesNotExist:
             obj = OpenCivicID()
 
+        obj.id = name
+        obj.start = dt.datetime.now()  # XXX: Don't do this.
         obj.external_id = external_id
 
-        print "Saving: {obj}".format(**locals())
+        print "Saving: %s" % (name)
         obj.save()
 
 
