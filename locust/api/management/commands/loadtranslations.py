@@ -8,7 +8,8 @@ import os
 def open_civic_namer(block, encoding='latin1'):
     # {'INTPTLAT': '32.536382', 'NAME': 'Autauga County', 'INTPTLONG': '-86.644490', 'USPS': 'AL', 'AWATER_SQMI': '9.952', 'AWATER': '25775735', 'ANSICODE': '00161526', 'HU10': '22135', 'POP10': '54571', 'ALAND_SQMI': '594.436', 'GEOID': '01001', 'ALAND': '1539582278'}
     name = block['NAME'].lower().replace(" ", "-").decode(encoding)
-    return "ocd:place/place:%s" % (name)
+    state_name = block['USPS']
+    return "ocd:place/%s/place/place:%s" % (state_name, name)
 
 
 
