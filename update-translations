@@ -11,6 +11,6 @@ wget("http://www.census.gov/geo/maps-data/data/docs/gazetteer/Gaz_counties_natio
 unzip("Gaz_counties_national.zip")
 wget("http://www.census.gov/geo/maps-data/data/docs/gazetteer/Gaz_places_national.zip")
 unzip("Gaz_places_national.zip")
-rm("*zip")
+rm("Gaz_places_national.zip", "Gaz_counties_national.zip")
 
 os.chdir("..")
