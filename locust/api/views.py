@@ -18,7 +18,7 @@ def render_api_response(obj):
 def query_pentagon(lat, lon):
     url = settings.PENTAGON_URL
     url += "/boundaries/?contains={lat},{lon}".format(**locals())
-    return [x['external_id'] for x in
+    return [x['name'] for x in
             json.load(urllib2.urlopen(url))['objects']]
 
 
@@ -36,14 +36,14 @@ def query_space_time(request):
 
 
     ids = query_pentagon(lat, lon)
-    query = [Q(id__in=ids)]
+    query = [Q(external_id__in=ids)]
 
     query.append(Q(start__lt=date))
     query.append(Q(end__gte=date) | Q(end=None))
 
     objs = OpenCivicID.objects.filter(*query)
     return render_api_response({
-        "response": [x.external_id for x in objs],
+        "response": [x.id for x in objs],
         "_original_response": ids,
         "meta": {
             "status": "ok",
