@@ -1,4 +1,0 @@
-USPS    GEOID   ANSICODE        NAME    POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG                                                                                                    
-DE      10001   00217271        Kent County     162310  65338   1518196116      549470508            586.179         212.152     39.097088       -75.502982                                                                                        
-DE      10003   00217270        New Castle County       538479  217511  1104074798      175385759            426.286          67.717     39.575915       -75.644132                                                                                 
-DE      10005   00217269        Sussex County   197145  123036  2424432871      674204700            936.079         260.312     38.677511       -75.335495                                                                                     

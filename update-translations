@@ -1,27 +1,16 @@
 #!/usr/bin/env python
 
-from sh import mkdir, wget
-
-import sys
-import sh
-import us
+from sh import mkdir, wget, unzip, rm
 import os
 
 
-URL = "http://www.census.gov/geo/maps-data/data/docs/gazetteer/{type}_list_{fips}.txt"
+mkdir("-p", "translations")
+os.chdir("translations")
 
-for state in us.states.STATES:
-    for t in ("counties", "2010_place"):
-        fips = state.fips
-        url = URL.format(type=t, fips=fips)
-        path = "translations/%d/%s" % (int(fips), t)
-        cwd = os.getcwd()
-        mkdir('-p', path)
-        os.chdir(path)
-        try:
-            wget(url)
-        except sh.ErrorReturnCode_8:
-            sys.stderr.write("[ err ] 404: " + url + "\n")
-            sys.stderr.flush()
+wget("http://www.census.gov/geo/maps-data/data/docs/gazetteer/Gaz_counties_national.zip")
+unzip("Gaz_counties_national.zip")
+wget("http://www.census.gov/geo/maps-data/data/docs/gazetteer/Gaz_places_national.zip")
+unzip("Gaz_places_national.zip")
+rm("*zip")
 
-        os.chdir(cwd)
+os.chdir("..")

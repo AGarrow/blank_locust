@@ -23,17 +23,17 @@ def parse_date(string):
     return None
 
 
-def itercsv(fpath):
+def itertsv(fpath):
     for line in open(fpath, 'r'):
         if line.startswith("#"):
             continue
 
-        yield [x.strip() for x in line.split(",")]
+        yield [x.strip() for x in line.split("      ")]
 
 
 def update_db(path):
-    for _id, external_id, start, end, description in itercsv(path):
-        start, end = (parse_date(x) for x in (start, end))
+    for bits in itertsv(path):
+        print bits
 
         try:
             print external_id
@@ -41,10 +41,6 @@ def update_db(path):
         except OpenCivicID.DoesNotExist:
             obj = OpenCivicID()
 
-        obj.id = _id
-        obj.start = start
-        obj.end = end
-        # obj.description = description
         obj.external_id = external_id
 
         print "Saving: {obj}".format(**locals())
@@ -62,6 +58,6 @@ class Command(BaseCommand):
         for path in args:
             for _file in os.walk(path):
                 root, folders, files = _file
-                for _fname in filter(lambda x: x.endswith(".csv"), files):
+                for _fname in filter(lambda x: x.endswith(".txt"), files):
                     path = "/".join([root, _fname])
                     update_db(path)

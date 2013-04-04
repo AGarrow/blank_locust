@@ -1,2 +1,0 @@
-USPS    GEOID   ANSICODE        NAME    LSAD    FUNCSTAT        POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG                                                                                      
-DC      1150000 02390665        Washington city 25      N       601723  296719  158114680       18884970              61.048           7.292     38.904149       -77.017094                                                                              
