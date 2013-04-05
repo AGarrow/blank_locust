@@ -44,6 +44,9 @@ def update_db(path, place):
         except OpenCivicID.DoesNotExist:
             obj = OpenCivicID()
 
+        if obj.id != name:
+            obj.delete()
+
         obj.id = name
         obj.start = dt.datetime.now()  # XXX: Don't do this.
         obj.external_id = external_id
