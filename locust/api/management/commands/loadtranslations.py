@@ -5,15 +5,6 @@ import datetime as dt
 import os
 
 
-def open_civic_namer(block, encoding='latin1'):
-    # {'INTPTLAT': '32.536382', 'NAME': 'Autauga County', 'INTPTLONG': '-86.644490', 'USPS': 'AL', 'AWATER_SQMI': '9.952', 'AWATER': '25775735', 'ANSICODE': '00161526', 'HU10': '22135', 'POP10': '54571', 'ALAND_SQMI': '594.436', 'GEOID': '01001', 'ALAND': '1539582278'}
-    name = block['NAME'].lower().replace(" ", "-").decode(encoding)
-    state_name = block['USPS']
-    return "ocd:place/%s/place/place:%s" % (state_name, name)
-
-
-
-
 def parse_date(string):
     fmts = [
         "%Y-%m-%d",  # YYY-MM-DD
@@ -43,9 +34,9 @@ def itertsv(fpath):
         yield dict(zip(headers, [x.strip() for x in line.split("\t")]))
 
 
-def update_db(path):
+def update_db(path, place):
     for bits in itertsv(path):
-        name = open_civic_namer(bits)
+        name = place['namer'](bits)
         external_id = bits['GEOID']
 
         try:
@@ -69,9 +60,8 @@ class Command(BaseCommand):
             print "Hurm. I need a directory to look at. Not doing anything."
             return
 
-        for path in args:
-            for _file in os.walk(path):
-                root, folders, files = _file
-                for _fname in filter(lambda x: x.endswith(".txt"), files):
-                    path = "/".join([root, _fname])
-                    update_db(path)
+        dirs = args
+        for d in dirs:
+            mod = __import__(d)
+            for place in mod.PLACES:
+                update_db(os.path.join(d, place), mod.PLACES[place])
