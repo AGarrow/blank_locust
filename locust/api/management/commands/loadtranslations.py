@@ -48,6 +48,7 @@ def update_db(path, place):
             obj.delete()
 
         obj.id = name
+        obj.set_id = place['set']
         obj.start = dt.datetime.now()  # XXX: Don't do this.
         obj.external_id = external_id
 

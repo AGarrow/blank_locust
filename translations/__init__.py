@@ -16,9 +16,11 @@ def place_namer(block, encoding='latin1'):
 
 PLACES = {
     "Gaz_counties_national.txt": {
-        "namer": county_namer
+        "namer": county_namer,
+        "set": "counties-13",
     },
     "Gaz_places_national.txt": {
-        "namer": place_namer
+        "namer": place_namer,
+        "set": "places-13",
     }
 }
