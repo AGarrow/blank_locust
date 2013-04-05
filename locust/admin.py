@@ -1,5 +1,5 @@
 from django.contrib import admin
-from locust.api.models import OpenCivicID
+from .models import OpenCivicID
 
 
 

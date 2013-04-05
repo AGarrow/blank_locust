@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from locust.api.models import OpenCivicID
+from ...models import OpenCivicID
 
 import datetime as dt
 import os

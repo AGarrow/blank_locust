@@ -1,12 +1,6 @@
 from django.conf.urls import patterns, include, url
 
-from django.contrib import admin
-admin.autodiscover()
-
-urlpatterns = patterns('',
-    # url(r'^$', 'locust.views.home', name='home'),
-    url(r'^api/', include('locust.api.urls')),
-
-    # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('locust.views',
+    url(r'^$', 'index', name='index'),
+    url(r'^query/$', 'query_space_time', name='query'),
 )
