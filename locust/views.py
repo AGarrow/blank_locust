@@ -17,13 +17,13 @@ def render_api_response(obj):
 
 def query_pentagon_by_lat_lon(lat, lon):
     url = "/boundaries/?contains={lat},{lon}".format(**locals())
-    return query_pentagon(url)
+    return [x['name'] for x in query_pentagon(url)['objects']]
 
 
 def query_pentagon(url):
     URL = settings.PENTAGON_URL
     URL += url
-    return [x['name'] for x in json.load(urllib2.urlopen(URL))['objects']]
+    return json.load(urllib2.urlopen(URL))
 
 
 def index(request):
@@ -63,6 +63,7 @@ def query_by_ocd_id(request, ocdid):
     fmt = "/boundaries/{set_id}/{external_id}/"
 
     return render_api_response({
-        "response": [query_pentagon(fmt.format(**x)) for x in geoms],
+        "response": [query_pentagon(fmt.format(set_id=x.set_id,
+            external_id=x.external_id)) for x in geoms],
         "meta": {"status": "ok"}
     })
