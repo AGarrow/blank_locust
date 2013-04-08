@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from .models import OpenCivicID
+from .models import DivisionGeometry, Division
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -41,9 +41,9 @@ def query_space_time(request):
     query.append(Q(start__lt=date))
     query.append(Q(end__gte=date) | Q(end=None))
 
-    objs = OpenCivicID.objects.filter(*query)
+    objs = DivisionGeometry.objects.filter(*query)
     return render_api_response({
-        "response": [x.id for x in objs],
+        "response": [x.division.id for x in objs],
         "_original_response": ids,
         "meta": {
             "status": "ok",
