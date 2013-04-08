@@ -15,11 +15,15 @@ def render_api_response(obj):
     return HttpResponse(json.dumps(obj))
 
 
-def query_pentagon(lat, lon):
-    url = settings.PENTAGON_URL
-    url += "/boundaries/?contains={lat},{lon}".format(**locals())
-    return [x['name'] for x in
-            json.load(urllib2.urlopen(url))['objects']]
+def query_pentagon_by_lat_lon(lat, lon):
+    url = "/boundaries/?contains={lat},{lon}".format(**locals())
+    return query_pentagon(url)
+
+
+def query_pentagon(url):
+    URL = settings.PENTAGON_URL
+    URL += url
+    return [x['name'] for x in json.load(urllib2.urlopen(URL))['objects']]
 
 
 def index(request):
@@ -35,7 +39,7 @@ def query_space_time(request):
         date = dt.datetime.now()
 
 
-    ids = query_pentagon(lat, lon)
+    ids = query_pentagon_by_lat_lon(lat, lon)
     query = [Q(external_id__in=ids)]
 
     query.append(Q(start__lt=date))
@@ -43,11 +47,22 @@ def query_space_time(request):
 
     objs = DivisionGeometry.objects.filter(*query)
     return render_api_response({
-        "response": [x.division.id for x in objs],
+        "response": list(set([x.division.id for x in objs])),
         "_original_response": ids,
         "meta": {
             "status": "ok",
             "_pentagon_responses": len(ids),
             "_locust_responses": len(objs)
         }
+    })
+
+
+def query_by_ocd_id(request, ocdid):
+    obj = Division.objects.get(id=ocdid)
+    geoms = DivisionGeometry.objects.filter(division=obj)
+    fmt = "/boundaries/{set_id}/{external_id}/"
+
+    return render_api_response({
+        "response": [query_pentagon(fmt.format(**x)) for x in geoms],
+        "meta": {"status": "ok"}
     })
