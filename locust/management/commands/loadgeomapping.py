@@ -9,7 +9,7 @@ TYPE_SET_MAPPER = {
     "county": "county",
     "place": "place",
     "parish": "county",
-    "burough": "county",
+    "borough": "county",
 }
 
 

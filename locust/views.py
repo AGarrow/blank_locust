@@ -49,11 +49,11 @@ def query_space_time(request):
     objs = DivisionGeometry.objects.filter(*query)
     return render_api_response({
         "response": list(set([x.division.id for x in objs])),
-        "_original_response": ids,
+#        "_original_response": ids,
         "meta": {
             "status": "ok",
-            "_pentagon_responses": len(ids),
-            "_locust_responses": len(objs)
+#            "_pentagon_responses": len(ids),
+#            "_locust_responses": len(objs)
         }
     })
 
