@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
 from .models import DivisionGeometry, Division
+from django.http import Http404
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -65,5 +66,28 @@ def query_by_ocd_id(request, ocdid):
     return render_api_response({
         "response": [query_pentagon(fmt.format(set_id=x.set_id,
             external_id=x.external_id)) for x in geoms],
+        "meta": {"status": "ok"}
+    })
+
+
+def query_lookup(request, query):
+    if "/" in query:
+        queries = query.split("/")
+    else:
+        queries = [query]
+
+    dbq = []
+    for query in queries:
+        if ":" not in query:
+            raise Http404("Invalid query: %s" % (query))
+
+        _type, value = query.split(":", 1)
+        q = Division.create_query(_type, value)
+        dbq.append(q)
+
+    objs = Division.objects.filter(*dbq)
+
+    return render_api_response({
+        "response": [x.id for x in objs],
         "meta": {"status": "ok"}
     })

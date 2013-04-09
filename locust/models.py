@@ -24,6 +24,20 @@ class Division(models.Model):
     def __unicode__(self):
         return '{0} ({1})'.format(self.display_name, self.id)
 
+    @staticmethod
+    def create_query(_type, value):
+        Q = models.Q
+        types = range(1, 8)
+        ret = None
+        for i in types:
+            val = Q(**{"subtype%d" % (i): _type, "subid%d" % (i): value})
+            if ret is None:
+                ret = val
+                continue
+            ret = ret | val
+        return ret
+
+
 
 class DivisionGeometry(models.Model):
     division = models.ForeignKey(Division, related_name='geometries')
