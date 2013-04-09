@@ -6,7 +6,7 @@ from ...models import Division
 
 
 class Command(BaseCommand):
-    help = 'Loads in tons of data'
+    help = 'Loads in division ids from ocd-division file'
 
     def handle(self, *args, **options):
         if not args:
@@ -16,7 +16,7 @@ class Command(BaseCommand):
         for arg in args:
             print arg, '...',
             count = 0
-            for name, ocd_id in csv.reader(urllib2.urlopen(arg)):
+            for ocd_id, name in csv.reader(urllib2.urlopen(arg)):
                 pieces = ocd_id.split('/')
                 if pieces.pop(0) != 'ocd-division':
                     raise Exception('ID must start with ocd-division/')
