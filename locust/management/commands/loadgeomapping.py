@@ -5,13 +5,23 @@ import datetime as dt
 import urllib2
 import csv
 
+TYPE_SET_MAPPER = {
+    "county": "county",
+    "place": "place",
+    "parish": "county",
+    "burough": "county",
+}
+
 
 class Command(BaseCommand):
     help = 'Loads in geoid mapping things'
 
     def handle(self, *args, **options):
         args = list(args)
-        set_id = args.pop(0)
+        set_year = args.pop(0)
+
+        if args == []:
+            raise Exception("Need URL to grab. - did you give me a set year ID?")
 
         for arg in args:
             print arg, '...',
@@ -25,6 +35,11 @@ class Command(BaseCommand):
 
                 if geom.division.id != division.id:
                     geom.delete()
+
+                _type, short_id = [
+                    x.split(":", 1) for x in division.id.split("/")[1:]
+                ][-1]
+                set_id = "%s-%s" % (TYPE_SET_MAPPER[_type], set_year)
 
                 geom.external_id = geo_id
                 geom.division = division

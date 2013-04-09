@@ -77,21 +77,10 @@ def query_by_ocd_id(request, ocdid):
 
 
 def query_lookup(request, query):
-    if "/" in query:
-        queries = query.split("/")
-    else:
-        queries = [query]
 
-    dbq = []
-    for query in queries:
-        if ":" not in query:
-            raise Http404("Invalid query: %s" % (query))
-
-        _type, value = query.split(":", 1)
-        q = Division.create_query(_type, value)
-        dbq.append(q)
-
-    objs = Division.objects.filter(*dbq)
+    objs = Division.ocd_id_query(*[x.split(":", 1) for x in query.split("/")])
+    if objs is None:
+        raise Http404("Sorry; can't complete that request.")
 
     return render_api_response({
         "response": [x.id for x in objs],

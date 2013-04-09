@@ -1,4 +1,15 @@
+from collections import OrderedDict
 from django.db import models
+
+DIVISION_ORDER = OrderedDict([
+    ("subtype1", "subid1"),
+    ("subtype2", "subid2"),
+    ("subtype3", "subid3"),
+    ("subtype4", "subid4"),
+    ("subtype5", "subid5"),
+    ("subtype6", "subid6"),
+    ("subtype7", "subid7")
+])
 
 
 class Division(models.Model):
@@ -25,22 +36,26 @@ class Division(models.Model):
         return '{0} ({1})'.format(self.display_name, self.id)
 
     @staticmethod
-    def create_query(_type, value):
+    def ocd_id_query(*compare):
         Q = models.Q
+        compare = list(compare)
 
-        if _type == "country":
-            return Q(country=value)
+        ret = compare.pop(0)
+        _type, value = ret
+        if _type != "country":
+            return None
 
-        types = range(1, 8)
-        ret = None
-        for i in types:
-            val = Q(**{"subtype%d" % (i): _type, "subid%d" % (i): value})
-            if ret is None:
-                ret = val
-                continue
-            ret = ret | val
-        return ret
+        ret = [Q(country=value)]
 
+        els = zip(compare, DIVISION_ORDER)
+        for element in els:
+            values, order = element
+            subtype_id = DIVISION_ORDER[order]
+            _type, value = values
+            ret.append(Q(**{order: _type,
+                            subtype_id: value}))
+
+        return Division.objects.filter(*ret)
 
 
 class DivisionGeometry(models.Model):
