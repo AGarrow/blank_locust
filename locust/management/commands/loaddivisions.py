@@ -1,5 +1,6 @@
 import csv
 import urllib2
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from ...models import Division
@@ -8,10 +9,18 @@ from ...models import Division
 class Command(BaseCommand):
     help = 'Loads in division ids from ocd-division file'
 
+    option_list = BaseCommand.option_list + (
+        make_option('--clear', action='store_true', dest='clear',
+                    default=False, help='Clear divisions first.'),
+    )
+
     def handle(self, *args, **options):
         if not args:
             print 'must specify arguments'
             return
+
+        if options['clear']:
+            Division.objects.all().delete()
 
         for arg in args:
             print arg, '...',
@@ -33,7 +42,8 @@ class Command(BaseCommand):
                     args['subid%s' % n] = id_
                     n += 1
 
-                Division.objects.create(id=ocd_id, display_name=name,
+                Division.objects.create(id=ocd_id,
+                                        display_name=name.decode('latin1'),
                                         country=country, **args)
                 count += 1
             print count, 'objects'
