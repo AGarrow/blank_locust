@@ -27,6 +27,10 @@ class Division(models.Model):
     @staticmethod
     def create_query(_type, value):
         Q = models.Q
+
+        if _type == "country":
+            return Q(country=value)
+
         types = range(1, 8)
         ret = None
         for i in types:

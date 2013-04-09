@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 if not country.startswith('country:'):
                     raise Exception('Second part of ID must be country:')
                 else:
-                    country = country.strip('country:')
+                    country = country.replace('country:', "")
                 n = 1
                 args = {}
                 for piece in pieces:
@@ -32,6 +32,7 @@ class Command(BaseCommand):
                     args['subtype%s' % n] = type_
                     args['subid%s' % n] = id_
                     n += 1
+
                 Division.objects.create(id=ocd_id, display_name=name,
                                         country=country, **args)
                 count += 1

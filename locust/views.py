@@ -66,7 +66,13 @@ def query_by_ocd_id(request, ocdid):
     return render_api_response({
         "response": [query_pentagon(fmt.format(set_id=x.set_id,
             external_id=x.external_id)) for x in geoms],
-        "meta": {"status": "ok"}
+        "meta": {
+            "status": "ok",
+            "division": {
+                "id": obj.id,
+                "country": obj.country
+            }
+        }
     })
 
 
