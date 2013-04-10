@@ -1,6 +1,6 @@
-from boundaries.models import BoundarySet
 from collections import OrderedDict
 from django.db import models
+from boundaries.models import BoundarySet, Boundary
 
 
 class DivisionManager(models.Manager):
@@ -73,14 +73,16 @@ class TemporalSet(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField(null=True)
 
+    def __unicode__(self):
+        return '{0} ({1}-{2})'.format(self.boundary_set, self.start,
+                                      self.end or '')
 
 
 class DivisionGeometry(models.Model):
     division = models.ForeignKey(Division, related_name='geometries')
-    # possibly refactor this to just point to a boundary object?
-    external_id = models.CharField(max_length=128, unique=True)
-    temporal_set = models.ForeignKey(TemporalSet)
+    temporal_set = models.ForeignKey(TemporalSet, related_name='geometries')
+    boundary = models.ForeignKey(Boundary, related_name='geometries')
 
     def __unicode__(self):
-        return '{0} - {1} - {2}'.format(self.division, self.set_id,
-                                        self.division_id)
+        return '{0} - {1} - {2}'.format(self.division, self.temporal_set,
+                                        self.boundary)
