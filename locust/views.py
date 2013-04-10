@@ -60,12 +60,13 @@ def query_by_ocd_id(request, ocdid):
     fmt = "/boundaries/{set_id}/{external_id}/"
 
     response = {
-        "division": { "id": obj.id, "country": obj.country },
-        "children": [{"id": d.id, "display_name": d.display_name} for d in Division.objects.children_of(ocdid)],
-        "boundaries": [query_pentagon(fmt.format(set_id=x.set_id,
-                                                 external_id=x.external_id))
-                       for x in geoms]
+        "division": {"id": obj.id, "country": obj.country,
+                     "display_name": obj.display_name}
     }
+    response['children'] = [{"id": d.id, "display_name": d.display_name}
+                            for d in Division.objects.children_of(ocdid)]
+    response['boundaries'] = [query_pentagon(
+        fmt.format(set_id=x.set_id, external_id=x.external_id)) for x in geoms]
 
     return render_api_response({
         "response": response,
