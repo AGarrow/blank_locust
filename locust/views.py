@@ -27,10 +27,6 @@ def query_pentagon(url):
     return json.load(urllib2.urlopen(URL))
 
 
-def index(request):
-    return render_to_response("locust/api/index.html", {})
-
-
 def query_space_time(request):
     lat, lon = [request.GET[x] for x in ['lat', 'lon']]
     date = request.GET["date"] if "date" in request.GET else None
