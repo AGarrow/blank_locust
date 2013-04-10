@@ -59,26 +59,14 @@ def query_by_ocd_id(request, ocdid):
     geoms = DivisionGeometry.objects.filter(division=obj)
     fmt = "/boundaries/{set_id}/{external_id}/"
 
-    return render_api_response({
-        "response": [query_pentagon(fmt.format(set_id=x.set_id,
-            external_id=x.external_id)) for x in geoms],
-        "meta": {
-            "status": "ok",
-            "division": {
-                "id": obj.id,
-                "country": obj.country
-            }
-        }
-    })
-
-
-def query_lookup(request, query):
-
-    objs = Division.ocd_id_query(*[x.split(":", 1) for x in query.split("/")])
-    if objs is None:
-        raise Http404("Sorry; can't complete that request.")
+    response = {
+        "division": { "id": obj.id, "country": obj.country },
+        "children": [d["id"] for d in Division.objects.children_of(ocdid)],
+        "boundaries": [query_pentagon(fmt.format(set_id=x.set_id,
+                                                 external_id=x.external_id))
+                       for x in geoms]
+    }
 
     return render_api_response({
-        "response": [x.id for x in objs],
-        "meta": {"status": "ok"}
+        "response": response,
     })

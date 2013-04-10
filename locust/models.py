@@ -1,18 +1,49 @@
 from collections import OrderedDict
 from django.db import models
 
-DIVISION_ORDER = OrderedDict([
-    ("subtype1", "subid1"),
-    ("subtype2", "subid2"),
-    ("subtype3", "subid3"),
-    ("subtype4", "subid4"),
-    ("subtype5", "subid5"),
-    ("subtype6", "subid6"),
-    ("subtype7", "subid7")
-])
+
+class DivisionManager(models.Manager):
+
+    def children_of(self, division_id, subtype=None, depth=1):
+        pieces = [piece.split(':', 1) for piece in division_id.split('/')]
+        query = {}
+
+        # if they included the ocd-division bit, pop it off
+        if pieces[0] == ['ocd-division']:
+            pieces.pop(0)
+
+        if pieces[0][0] != 'country':
+            raise ValueError('OCD id must start with country')
+
+        query['country'] = pieces[0][1]
+
+        # add the remaining pieces
+        n = 1
+        for stype, subid in pieces[1:]:
+            query['subtype{0}'.format(n)] = stype
+            query['subid{0}'.format(n)] = subid
+            n += 1
+
+        # only get children
+        if subtype:
+            query['subtype{0}'.format(n)] = subtype
+        else:
+            query['subtype{0}__isnull'.format(n)] = False
+        query['subid{0}__isnull'.format(n)] = False
+
+        # allow for depth wildcards
+        n += depth
+
+        # ensure final field is null
+        query['subtype{0}__isnull'.format(n)] = True
+        query['subid{0}__isnull'.format(n)] = True
+
+        return self.filter(**query)
 
 
 class Division(models.Model):
+    objects = DivisionManager()
+
     id = models.CharField(max_length=300, primary_key=True)
     display_name = models.CharField(max_length=100)
     country = models.CharField(max_length=2)
@@ -34,28 +65,6 @@ class Division(models.Model):
 
     def __unicode__(self):
         return '{0} ({1})'.format(self.display_name, self.id)
-
-    @staticmethod
-    def ocd_id_query(*compare):
-        Q = models.Q
-        compare = list(compare)
-
-        ret = compare.pop(0)
-        _type, value = ret
-        if _type != "country":
-            return None
-
-        ret = [Q(country=value)]
-
-        els = zip(compare, DIVISION_ORDER)
-        for element in els:
-            values, order = element
-            subtype_id = DIVISION_ORDER[order]
-            _type, value = values
-            ret.append(Q(**{order: _type,
-                            subtype_id: value}))
-
-        return Division.objects.filter(*ret)
 
 
 class DivisionGeometry(models.Model):
