@@ -61,7 +61,7 @@ def query_by_ocd_id(request, ocdid):
 
     response = {
         "division": { "id": obj.id, "country": obj.country },
-        "children": [d.id for d in Division.objects.children_of(ocdid)],
+        "children": [{"id": d.id, "name": d.name} for d in Division.objects.children_of(ocdid)],
         "boundaries": [query_pentagon(fmt.format(set_id=x.set_id,
                                                  external_id=x.external_id))
                        for x in geoms]
