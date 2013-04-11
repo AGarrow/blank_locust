@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
-from .models import DivisionGeometry, Division
+from .models import DivisionGeometry, Division, TemporalSet
+from boundaries.models import Boundary
 from django.http import Http404
 
 from django.views.decorators.csrf import csrf_exempt
@@ -19,7 +20,7 @@ def render_api_response(obj):
 def query_pentagon_by_lat_lon(lat, lon, sets=None):
     url = "/boundaries/?contains={lat},{lon}".format(**locals())
     if sets:
-        url += "&sets={sets}".format(sets=",".join(sets))
+        url += "&sets={sets}".format(sets=",".join(s.slug for s in sets))
 
     return [x['name'] for x in query_pentagon(url)['objects']]
 
@@ -42,10 +43,14 @@ def query_space_time(request):
         Q(start__lt=date), Q(end__gte=date) | Q(end=None))
 
     sets = [x.boundary_set for x in valid_sets]
-    objs = query_pentagon_by_lat_lon(lat, lon, sets)
+
+    point = 'POINT(%s %s)' % (lon, lat)
+
+    bounds = Boundary.objects.filter(shape__contains=point, set__in=sets)
+    geoms = DivisionGeometry.objects.filter(boundary__in=x)
 
     return render_api_response({
-        "response": list(set([x.division.id for x in objs])),
+        "response": [x.division.id for x in geoms],
 #        "_original_response": ids,
         "meta": {
             "status": "ok",
