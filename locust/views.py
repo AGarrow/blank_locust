@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response
-from .models import DivisionGeometry, Division
+from .models import DivisionGeometry, Division, TemporalSet
+from boundaries.models import Boundary
 from django.http import Http404
 
 from django.views.decorators.csrf import csrf_exempt
@@ -16,11 +17,6 @@ def render_api_response(obj):
     return HttpResponse(json.dumps(obj))
 
 
-def query_pentagon_by_lat_lon(lat, lon):
-    url = "/boundaries/?contains={lat},{lon}".format(**locals())
-    return [x['name'] for x in query_pentagon(url)['objects']]
-
-
 def query_pentagon(url):
     URL = settings.PENTAGON_URL
     URL += url
@@ -35,16 +31,18 @@ def query_space_time(request):
     else:
         date = dt.datetime.now()
 
+    valid_sets = TemporalSet.objects.filter(
+        Q(start__lt=date), Q(end__gte=date) | Q(end=None))
 
-    ids = query_pentagon_by_lat_lon(lat, lon)
-    query = [Q(external_id__in=ids)]
+    sets = [x.boundary_set for x in valid_sets]
 
-    query.append(Q(start__lt=date))
-    query.append(Q(end__gte=date) | Q(end=None))
+    point = 'POINT(%s %s)' % (lon, lat)
 
-    objs = DivisionGeometry.objects.filter(*query)
+    bounds = Boundary.objects.filter(shape__contains=point, set__in=sets)
+    geoms = DivisionGeometry.objects.filter(boundary__in=x)
+
     return render_api_response({
-        "response": list(set([x.division.id for x in objs])),
+        "response": [x.division.id for x in geoms],
 #        "_original_response": ids,
         "meta": {
             "status": "ok",
