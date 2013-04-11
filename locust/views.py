@@ -65,8 +65,11 @@ def query_by_ocd_id(request, ocdid):
     }
     response['children'] = [{"id": d.id, "display_name": d.display_name}
                             for d in Division.objects.children_of(ocdid)]
-    response['boundaries'] = [query_pentagon(
-        fmt.format(set_id=x.set_id, external_id=x.external_id)) for x in geoms]
+    response['geometries'] = [
+        {'start': dg.temporal_set.start.strftime('%Y-%m-%d'),
+         'end': dg.temporal_set.end.strftime('%Y-%m-%d') if dg.temporal_set.end else None,
+         'boundary': dg.boundary.as_dict()
+        } for dg in obj.geometries.all()]
 
     return render_api_response({
         "response": response,
