@@ -1,51 +1,43 @@
-from ...models import Division, DivisionGeometry
-from django.core.management.base import BaseCommand, CommandError
-
-import datetime as dt
-import urllib2
 import csv
+import urllib2
+from optparse import make_option
+from datetime import datetime
 
-TYPE_SET_MAPPER = {
-    "county": "county",
-    "place": "place",
-    "parish": "county",
-    "borough": "county",
-}
+from django.core.management.base import BaseCommand, CommandError
+from ...models import DivisionGeometry, TemporalSet
 
 
 class Command(BaseCommand):
-    help = 'Loads in geoid mapping things'
+    args = '<boundary_set_id> <start_date (YYYY-MM-DD)> <mapping_url>'
+    help = 'Creates temporal sets and division geometries.'
+
+    option_list = BaseCommand.option_list + (
+        make_option('--end', dest='end', default=None, help='optional end date'),
+    )
 
     def handle(self, *args, **options):
-        args = list(args)
-        set_year = args.pop(0)
 
-        if args == []:
-            raise Exception("Need URL to grab. - did you give me a set year ID?")
+        if len(args) != 3:
+            raise CommandError('boundary_set_id, start_date, and mapping_url required')
 
-        for arg in args:
-            print arg, '...',
-            count = 0
-            for ocd_id, geo_id in csv.reader(urllib2.urlopen(arg)):
-                division = Division.objects.get(id=ocd_id)
-                try:
-                    geom = DivisionGeometry.objects.get(external_id=geo_id)
-                except DivisionGeometry.DoesNotExist:
-                    geom = DivisionGeometry(division=division)
+        boundary_set_id, start, mapping_url = args
+        end = options.get('end', None)
 
-                if geom.division.id != division.id:
-                    geom.delete()
+        start = datetime.strptime(start, '%Y-%m-%d')
+        if end:
+            end = datetime.strptime(end, '%Y-%m-%d')
 
-                _type, short_id = [
-                    x.split(":", 1) for x in division.id.split("/")[1:]
-                ][-1]
-                set_id = "%s-%s" % (TYPE_SET_MAPPER[_type], set_year)
+        # build geo id mapping
+        geoid_mapping = {}
+        for ocd_id, geo_id in csv.reader(urllib2.urlopen(mapping_url)):
+            geoid_mapping[geo_id] = ocd_id
 
-                geom.external_id = geo_id
-                geom.division = division
-                geom.set_id = set_id
-                geom.start = dt.datetime.now()
-                geom.save()
-                count += 1
-
-            print count, 'objects'
+        # create temporal set
+        tset = TemporalSet.objects.create(boundary_set_id=boundary_set_id,
+                                          start=start, end=end)
+        for boundary in tset.boundary_set.boundaries.all():
+            ocd_id = geoid_mapping.get(boundary.external_id)
+            if ocd_id:
+                DivisionGeometry.objects.create(division_id=ocd_id,
+                                                temporal_set=tset,
+                                                boundary_id=boundary)
