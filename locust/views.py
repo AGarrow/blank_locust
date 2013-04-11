@@ -17,14 +17,6 @@ def render_api_response(obj):
     return HttpResponse(json.dumps(obj))
 
 
-def query_pentagon_by_lat_lon(lat, lon, sets=None):
-    url = "/boundaries/?contains={lat},{lon}".format(**locals())
-    if sets:
-        url += "&sets={sets}".format(sets=",".join(s.slug for s in sets))
-
-    return [x['name'] for x in query_pentagon(url)['objects']]
-
-
 def query_pentagon(url):
     URL = settings.PENTAGON_URL
     URL += url
