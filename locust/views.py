@@ -25,31 +25,23 @@ def query_pentagon(url):
 
 def query_space_time(request):
     lat, lon = [request.GET[x] for x in ['lat', 'lon']]
-    date = request.GET["date"] if "date" in request.GET else None
+
+    date = request.GET.get('date')
     if date:
         date = dt.datetime.strptime(date, "%Y-%m-%d")
     else:
         date = dt.datetime.now()
 
-    valid_sets = TemporalSet.objects.filter(
-        Q(start__lt=date), Q(end__gte=date) | Q(end=None))
-
-    sets = [x.boundary_set for x in valid_sets]
-
     point = 'POINT(%s %s)' % (lon, lat)
 
-    bounds = Boundary.objects.filter(shape__contains=point, set__in=sets)
-    geoms = DivisionGeometry.objects.filter(boundary__in=x)
+    divisions = Division.objects.filter(
+        Q(geometries__temporal_set__end__gte=date) |
+        Q(geometries__temporal_set__end=None),
+        geometries__temporal_set__start__lte=date,
+        geometries__boundary__shape__contains=point,
+    ).values_list('id', flat=True)
 
-    return render_api_response({
-        "response": [x.division.id for x in geoms],
-#        "_original_response": ids,
-        "meta": {
-            "status": "ok",
-#            "_pentagon_responses": len(ids),
-#            "_locust_responses": len(objs)
-        }
-    })
+    return render_api_response({ "response": list(divisions) })
 
 
 def query_by_ocd_id(request, ocdid):

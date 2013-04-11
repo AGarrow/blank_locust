@@ -1,9 +1,9 @@
 from collections import OrderedDict
-from django.db import models
+from django.contrib.gis.db import models
 from boundaries.models import BoundarySet, Boundary
 
 
-class DivisionManager(models.Manager):
+class DivisionManager(models.GeoManager):
 
     def children_of(self, division_id, subtype=None, depth=1):
         pieces = [piece.split(':', 1) for piece in division_id.split('/')]
