@@ -13,8 +13,17 @@ import urllib2
 import json
 
 
-def render_api_response(obj):
-    return HttpResponse(json.dumps(obj))
+def render_api_response(obj, per_page=None, page=1):
+    if isinstance(obj, list):
+        ret_obj = {
+            'results': obj,
+            'page': {'count': len(obj), 'per_page': per_page, 'page': page}
+        }
+    else:
+        ret_obj = {
+            'result': obj
+        }
+    return HttpResponse(json.dumps(ret_obj))
 
 
 def query_pentagon(url):
@@ -24,7 +33,11 @@ def query_pentagon(url):
 
 
 def query_space_time(request):
-    lat, lon = [request.GET[x] for x in ['lat', 'lon']]
+    try:
+        lat = request.GET['lat']
+        lon = request.GET['lon']
+    except KeyError as e:
+        raise Exception(e.message)
 
     date = request.GET.get('date')
     if date:
@@ -41,7 +54,7 @@ def query_space_time(request):
         geometries__boundary__shape__contains=point,
     ).values_list('id', flat=True)
 
-    return render_api_response({ "response": list(divisions) })
+    return render_api_response(list(divisions), per_page=1000)
 
 
 def query_by_ocd_id(request, ocdid):
@@ -61,6 +74,4 @@ def query_by_ocd_id(request, ocdid):
          'boundary': dg.boundary.as_dict()
         } for dg in obj.geometries.all()]
 
-    return render_api_response({
-        "response": response,
-    })
+    return render_api_response(response)
