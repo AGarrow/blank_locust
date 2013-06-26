@@ -4,7 +4,7 @@ from optparse import make_option
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-from ...models import DivisionGeometry, TemporalSet
+from locust.models import DivisionGeometry, TemporalSet
 
 
 class Command(BaseCommand):
