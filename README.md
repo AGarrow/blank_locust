@@ -214,6 +214,11 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
         python manage.py syncdb
 
+8. load shapefiles
+    from within the cloned represent-boundaries directory
+
+        python manage.py loadshapefiles
+
 8. start the server
 
         python manage.py runserver
