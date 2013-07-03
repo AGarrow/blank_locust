@@ -125,6 +125,7 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
             'django.contrib.messages',
             'django.contrib.staticfiles',
             'django.contrib.humanize',
+            'locust',
             'boundaries'
         )
 
@@ -210,18 +211,36 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
     VACUUM FREEZE;
     EOS
 
+7.  clone represent-canada-data repository and load the shapefiles 
+    from the locust directory
+            mkdir data
+            cd data
+            git clone https://github.com/opennorth/represent-canada-data.git
+            mv represent-canada-data shapefiles
+            cd ..
+            python manage.py loadshapefiles
+
+
+
 7. sync the database
 
         python manage.py syncdb
 
-8. load shapefiles
-    from within the cloned represent-boundaries directory
 
-        python manage.py loadshapefiles
 
 8. start the server
 
         python manage.py runserver
+
+I still need to figure out which arguments are needed to run the following commands
+    
+    this seems to require a URL, but where to get it from?
+    
+        python manage.py loaddivisions <url?>
+
+    no leads yet for 
+
+        python manage.py loadgeomapping <args>
 
 
 
