@@ -3,28 +3,30 @@ locust
 
 1.  add manage.py
 
-    #!/usr/bin/env python
-    import os
-    import sys
+        #!/usr/bin/env python
+        import os
+        import sys
 
-    if __name__ == "__main__":
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "locust.settings_local")
+        if __name__ == "__main__":
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "locust.settings_local")
 
-        from django.core.management import execute_from_command_line
+            from django.core.management import execute_from_command_line
 
-        execute_from_command_line(sys.argv)
+            execute_from_command_line(sys.argv)
 
 
 2.  add requirements.txt
 
-    Django
-    -e git://github.com/rhymeswithcycle/represent-boundaries.git#egg=boundaries
+        Django
+        -e git://github.com/rhymeswithcycle/represent-boundaries.git#egg=boundaries
 
 3.  changed import line in loadgeomapping.py
   from
-    from ...models import DivisionGeometry, TemporalSet
+
+      from ...models import DivisionGeometry, TemporalSet
   to
-    locust.models import DivisionGeometry, TemporalSet
+
+      locust.models import DivisionGeometry, TemporalSet
 
 4. add settings_local.py
 
