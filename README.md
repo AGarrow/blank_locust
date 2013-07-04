@@ -182,17 +182,17 @@ locust
 
 6.  set up postGIS
 
-GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
+    GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
 
-     brew unlink postgis
-     Install PostGIS 1.5:
+        brew unlink postgis
+        Install PostGIS 1.5:
 
-     brew tap homebrew/versions
-     brew install postgis15
+        brew tap homebrew/versions
+        brew install postgis15
   
-  Follow the PostgreSQL post-installation instructions:
+    Follow the PostgreSQL post-installation instructions:
 
-     brew info postgresql9
+        brew info postgresql9
 
 7.  Create a PostGIS template database:
 
