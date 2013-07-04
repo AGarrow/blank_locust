@@ -23,10 +23,10 @@ locust
 3.  changed import line in loadgeomapping.py
   from
 
-      from ...models import DivisionGeometry, TemporalSet
+        ...models import DivisionGeometry, TemporalSet
   to
 
-      locust.models import DivisionGeometry, TemporalSet
+        locust.models import DivisionGeometry, TemporalSet
 
 4. add settings_local.py
 
@@ -178,9 +178,9 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
 
 
-4. cloned [represent-boundaries](https://github.com/rhymeswithcycle/represent-boundaries), followed instructions, including adding line to url file (you can see 'boundaries' in INSTALLED APP in the settings_local.py file refered to above). This was all done in the same virtual environment as the locust directory (locust)
+5. cloned [represent-boundaries](https://github.com/rhymeswithcycle/represent-boundaries), followed instructions, including adding line to url file (you can see 'boundaries' in INSTALLED APP in the settings_local.py file refered to above). This was all done in the same virtual environment as the locust directory (locust)
 
-5.  set up postGIS
+6.  set up postGIS
 
   GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
 
@@ -193,7 +193,7 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
     brew info postgresql9
 
-6.  Create a PostGIS template database:
+7.  Create a PostGIS template database:
 
         createdb -h localhost -E UTF-8 postgres
         psql -h localhost -d postgres -f /usr/local/Cellar/postgis15/1.5.8/share/postgis/postgis.sql
@@ -213,7 +213,7 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
     VACUUM FREEZE;
     EOS
 
-7.  clone represent-canada-data repository and load the shapefiles 
+8.  clone represent-canada-data repository and load the shapefiles 
     from the locust directory
             mkdir data
             cd data
@@ -224,7 +224,7 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
 
 
-7. sync the database
+9. sync the database
 
         python manage.py syncdb
 
@@ -236,11 +236,11 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
 I still need to figure out which arguments are needed to run the following commands
     
-    this seems to require a URL, but where to get it from?
+this seems to require a URL, but where to get it from?
     
         python manage.py loaddivisions <url?>
 
-    no leads yet for 
+no leads yet for 
 
         python manage.py loadgeomapping <args>
 
