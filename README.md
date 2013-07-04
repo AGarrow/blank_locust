@@ -30,7 +30,7 @@ locust
 
 4. add settings_local.py
 
-the contents of this file may not <em> all </em> be necessary, but I've left them here until I determine what is.
+    the contents of this file may not <em> all </em> be necessary, but I've left them here until I determine what is.
 
         from os.path import abspath, dirname, join
 
