@@ -184,14 +184,15 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
   GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
 
-    brew unlink postgis
-    Install PostGIS 1.5:
+     brew unlink postgis
+     Install PostGIS 1.5:
 
-    brew tap homebrew/versions
-    brew install postgis15
+     brew tap homebrew/versions
+     brew install postgis15
+  
   Follow the PostgreSQL post-installation instructions:
 
-    brew info postgresql9
+     brew info postgresql9
 
 7.  Create a PostGIS template database:
 
@@ -205,13 +206,13 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
     brew install postgis15
     Paste all the following commands as a single block:
 
-    cat <<EOS | psql -h localhost -d postgres
-    UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'postgres';
-    GRANT ALL ON geometry_columns TO PUBLIC;
-    GRANT ALL ON geography_columns TO PUBLIC;
-    GRANT ALL ON spatial_ref_sys TO PUBLIC;
-    VACUUM FREEZE;
-    EOS
+     cat <<EOS | psql -h localhost -d postgres
+     UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'postgres';
+     GRANT ALL ON geometry_columns TO PUBLIC;
+     GRANT ALL ON geography_columns TO PUBLIC;
+     GRANT ALL ON spatial_ref_sys TO PUBLIC;
+     VACUUM FREEZE;
+     EOS
 
 8.  clone represent-canada-data repository and load the shapefiles 
     from the locust directory
