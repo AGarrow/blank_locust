@@ -204,7 +204,7 @@ locust
 
         brew rm postgis15
         brew install postgis15
-        
+
     Paste all the following commands as a single block:
 
         cat <<EOS | psql -h localhost -d postgres
@@ -231,20 +231,19 @@ locust
         python manage.py syncdb
 
 
+10. load divisions
+        
+        python manage.py loaddivisions <url>
 
-10. start the server
+    url's are raw csv's found at https://github.com/opencivicdata/ocd-division-ids
+
+11. start the server
 
         python manage.py runserver
 
-I still need to figure out which arguments are needed to run the following commands
-    
-this seems to require a URL, but where to get it from?
-    
-        python manage.py loaddivisions <url?>
 
-no leads yet for 
+`python manage.py loadgeomapping <args>` is looking for the arguments: `<boundary_set_id> <start_date (YYYY-MM-DD)> <mapping_url>` however, when I run `python manage.py loadgeomapping 0 2013-04-02 http://donnees.ville.montreal.qc.ca/fiche/polygones-arrondissements/` (the first boundary_set in teh database) I get `ValueError: need more than 1 value to unpack` not sure what to do with that yet.
 
-        python manage.py loadgeomapping <args>
 
 
 
