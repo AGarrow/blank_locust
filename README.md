@@ -202,17 +202,18 @@ locust
 
     If either of the psql commands fail with could not access file "$libdir/postgis-1.5": No such file or directory:
 
-    brew rm postgis15
-    brew install postgis15
+        brew rm postgis15
+        brew install postgis15
+        
     Paste all the following commands as a single block:
 
-     cat <<EOS | psql -h localhost -d postgres
-     UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'postgres';
-     GRANT ALL ON geometry_columns TO PUBLIC;
-     GRANT ALL ON geography_columns TO PUBLIC;
-     GRANT ALL ON spatial_ref_sys TO PUBLIC;
-     VACUUM FREEZE;
-     EOS
+        cat <<EOS | psql -h localhost -d postgres
+        UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'postgres';
+        GRANT ALL ON geometry_columns TO PUBLIC;
+        GRANT ALL ON geography_columns TO PUBLIC;
+        GRANT ALL ON spatial_ref_sys TO PUBLIC;
+        VACUUM FREEZE;
+        EOS
 
 8.  clone represent-canada-data repository and load the shapefiles 
     from the locust directory
@@ -231,7 +232,7 @@ locust
 
 
 
-8. start the server
+10. start the server
 
         python manage.py runserver
 
