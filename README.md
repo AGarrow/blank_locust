@@ -182,7 +182,7 @@ the contents of this file may not <em> all </em> be necessary, but I've left the
 
 6.  set up postGIS
 
-  GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
+GeoDjango is not compatible with PostGIS 2.0, so you must use PostGIS 1.5. PostGIS 1.5 is not compatible with PostgreSQL 9.2, so you must use PostgreSQL 9.0. If you already have PostGIS 2.0, run:
 
      brew unlink postgis
      Install PostGIS 1.5:
