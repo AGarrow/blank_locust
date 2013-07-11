@@ -235,14 +235,22 @@ locust
         
         python manage.py loaddivisions <url>
 
-    url's are raw csv's found at https://github.com/opencivicdata/ocd-division-ids
+    e.g. `python manage.py loaddivisions https://raw.github.com/opencivicdata/ocd-division-ids/master/identifiers/country-ca/ca_census_divisions.csv`
 
-11. start the server
+    url's are for raw csv's found at https://github.com/opencivicdata/ocd-division-ids
+
+11. load geo mappings
+
+        python manage.py loadgeomappings <boundary_set_id><start_date><mapping_url>
+
+    mapping_url's are for raw csv's found at https://github.com/opencivicdata/ocd-division-ids/tree/master/mappings
+    e.g. `python manage.py loadgeomapping census-divisions 2013-06-25 https://raw.github.com/opencivicdata/ocd-division-ids/master/mappings/country-ca-fr/ca_census_divisions.csv`  
+
+12. start the server
 
         python manage.py runserver
 
 
-`python manage.py loadgeomapping <args>` is looking for the arguments: `<boundary_set_id> <start_date (YYYY-MM-DD)> <mapping_url>` however, when I run `python manage.py loadgeomapping 0 2013-04-02 http://donnees.ville.montreal.qc.ca/fiche/polygones-arrondissements/` (the first boundary_set in teh database) I get `ValueError: need more than 1 value to unpack` not sure what to do with that yet.
 
 
 
