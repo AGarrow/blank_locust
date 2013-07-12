@@ -30,10 +30,11 @@ class Command(BaseCommand):
         # build geo id mapping
         geoid_mapping = {}
         for ocd_id, geo_id in csv.reader(urllib2.urlopen(mapping_url)):
-            geoid_mapping[geo_id] = ocd_id
+            geoid_mapping[ocd_id.split(':')[-1].strip()] = ocd_id
+
 
         # delete temporal set & mappings if they exist
-        tset = TemporalSet.objects.filter(boundary_set_id=boundary_set_id)
+        tset = TemporalSet.objects.filter(boundary_set_id=boundary_set_id)        
         if tset:
             print('Deleting existing TemporalSet')
             tset[0].geometries.all().delete()
@@ -49,4 +50,4 @@ class Command(BaseCommand):
                                                 temporal_set=tset,
                                                 boundary=boundary)
             else:
-                print 'unmatched external id', boundary, boundary.external_id
+                print 'unmatched external id', boundary.name, '//',boundary.external_id
